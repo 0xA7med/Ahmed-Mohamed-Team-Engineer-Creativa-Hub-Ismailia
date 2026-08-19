@@ -1,0 +1,111 @@
+{
+  "retrieval_method": "hybrid_bm25_dense_rrf",
+  "embedding_model": "BAAI/bge-m3",
+  "max_tokens": 512,
+  "candidate_k": 20,
+  "rrf_k": 60,
+  "top_k": 5,
+  "mean_P@3": 0.5,
+  "mean_P@5": 0.38571428571428573,
+  "top1_accuracy": 0.5714285714285714,
+  "per_question": [
+    {
+      "id": "q01",
+      "type": "direct",
+      "P@3": 0.3333333333333333,
+      "P@5": 0.2,
+      "top1_relevant": true
+    },
+    {
+      "id": "q02",
+      "type": "direct",
+      "P@3": 1.0,
+      "P@5": 0.6,
+      "top1_relevant": true
+    },
+    {
+      "id": "q03",
+      "type": "direct",
+      "P@3": 0.6666666666666666,
+      "P@5": 0.4,
+      "top1_relevant": true
+    },
+    {
+      "id": "q04",
+      "type": "direct",
+      "P@3": 0.3333333333333333,
+      "P@5": 0.4,
+      "top1_relevant": true
+    },
+    {
+      "id": "q05",
+      "type": "paraphrased",
+      "P@3": 0.6666666666666666,
+      "P@5": 0.4,
+      "top1_relevant": true
+    },
+    {
+      "id": "q06",
+      "type": "paraphrased",
+      "P@3": 0.0,
+      "P@5": 0.2,
+      "top1_relevant": false
+    },
+    {
+      "id": "q07",
+      "type": "paraphrased",
+      "P@3": 0.0,
+      "P@5": 0.2,
+      "top1_relevant": false
+    },
+    {
+      "id": "q08",
+      "type": "abbreviation",
+      "P@3": 0.6666666666666666,
+      "P@5": 0.6,
+      "top1_relevant": true
+    },
+    {
+      "id": "q09",
+      "type": "abbreviation",
+      "P@3": 0.6666666666666666,
+      "P@5": 0.6,
+      "top1_relevant": false
+    },
+    {
+      "id": "q10",
+      "type": "abbreviation",
+      "P@3": 0.3333333333333333,
+      "P@5": 0.4,
+      "top1_relevant": false
+    },
+    {
+      "id": "q11",
+      "type": "threshold",
+      "P@3": 0.6666666666666666,
+      "P@5": 0.4,
+      "top1_relevant": false
+    },
+    {
+      "id": "q12",
+      "type": "threshold",
+      "P@3": 0.0,
+      "P@5": 0.0,
+      "top1_relevant": false
+    },
+    {
+      "id": "q13",
+      "type": "direct",
+      "P@3": 1.0,
+      "P@5": 0.6,
+      "top1_relevant": true
+    },
+    {
+      "id": "q14",
+      "type": "direct",
+      "P@3": 0.6666666666666666,
+      "P@5": 0.4,
+      "top1_relevant": true
+    }
+  ]
+}

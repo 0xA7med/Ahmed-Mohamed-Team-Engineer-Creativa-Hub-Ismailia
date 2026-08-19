@@ -1,0 +1,123 @@
+{
+  "retrieval_method": "dense_only",
+  "embedding_model": "BAAI/bge-m3",
+  "max_tokens": 512,
+  "top_k": 5,
+  "mean_P@3": 0.6666666666666666,
+  "mean_P@5": 0.4714285714285714,
+  "top1_accuracy": 0.6428571428571429,
+  "per_question": [
+    {
+      "id": "q01",
+      "type": "direct",
+      "question": "When should pharmacological treatment be started for hypertension?",
+      "P@3": 0.6666666666666666,
+      "P@5": 0.4,
+      "top1_relevant": true
+    },
+    {
+      "id": "q02",
+      "type": "direct",
+      "question": "What laboratory tests should be done before and during hypertension treatment?",
+      "P@3": 1.0,
+      "P@5": 0.6,
+      "top1_relevant": true
+    },
+    {
+      "id": "q03",
+      "type": "direct",
+      "question": "What is the target blood pressure for patients receiving treatment?",
+      "P@3": 0.6666666666666666,
+      "P@5": 0.4,
+      "top1_relevant": true
+    },
+    {
+      "id": "q04",
+      "type": "direct",
+      "question": "How often should patients on hypertension treatment be re-assessed?",
+      "P@3": 1.0,
+      "P@5": 0.6,
+      "top1_relevant": true
+    },
+    {
+      "id": "q05",
+      "type": "paraphrased",
+      "question": "How high does blood pressure need to be before doctors prescribe medication?",
+      "P@3": 0.6666666666666666,
+      "P@5": 0.4,
+      "top1_relevant": true
+    },
+    {
+      "id": "q06",
+      "type": "paraphrased",
+      "question": "Which medicines does WHO recommend starting hypertension treatment with?",
+      "P@3": 0.3333333333333333,
+      "P@5": 0.4,
+      "top1_relevant": false
+    },
+    {
+      "id": "q07",
+      "type": "paraphrased",
+      "question": "When should a patient receive a single pill that combines two drugs?",
+      "P@3": 0.6666666666666666,
+      "P@5": 0.4,
+      "top1_relevant": false
+    },
+    {
+      "id": "q08",
+      "type": "abbreviation",
+      "question": "Are ACEi, ARB, CCB or thiazide diuretics preferred as first-line agents?",
+      "P@3": 0.6666666666666666,
+      "P@5": 0.6,
+      "top1_relevant": true
+    },
+    {
+      "id": "q09",
+      "type": "abbreviation",
+      "question": "Can HCWs who are not doctors administer antihypertensive treatment?",
+      "P@3": 0.6666666666666666,
+      "P@5": 0.6,
+      "top1_relevant": true
+    },
+    {
+      "id": "q10",
+      "type": "abbreviation",
+      "question": "Should CVD risk assessment delay the start of antihypertensive medication?",
+      "P@3": 0.3333333333333333,
+      "P@5": 0.6,
+      "top1_relevant": false
+    },
+    {
+      "id": "q11",
+      "type": "threshold",
+      "question": "At what blood pressure should treatment start for patients with existing cardiovascular disease?",
+      "P@3": 0.6666666666666666,
+      "P@5": 0.4,
+      "top1_relevant": false
+    },
+    {
+      "id": "q12",
+      "type": "threshold",
+      "question": "What SBP and DBP values define the treatment target for patients with high cardiovascular risk?",
+      "P@3": 0.3333333333333333,
+      "P@5": 0.2,
+      "top1_relevant": false
+    },
+    {
+      "id": "q13",
+      "type": "direct",
+      "question": "How should hypertension be managed in disaster and emergency settings?",
+      "P@3": 1.0,
+      "P@5": 0.6,
+      "top1_relevant": true
+    },
+    {
+      "id": "q14",
+      "type": "direct",
+      "question": "Does COVID-19 change the management of hypertension?",
+      "P@3": 0.6666666666666666,
+      "P@5": 0.4,
+      "top1_relevant": true
+    }
+  ]
+}
