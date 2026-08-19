@@ -9,27 +9,29 @@ It answers clinical questions with cited, page-referenced evidence, and refuses
 out-of-scope or unsafe requests.
 
 ## Architecture
+
+```text
 WHO Guideline PDF
-│
-▼
+      │
+      ▼
 Docling layout-aware parsing (lossless JSON + provenance)
-│
-▼
+      │
+      ▼
 HybridChunker — section-aware chunking, 512 tokens max
 150 chunks, 100% metadata coverage (chunk_id, section_title, pages, source)
-│
-▼
+      │
+      ▼
 BGE-M3 embeddings (1024-dim, normalized) → FAISS IndexFlatIP
-│
-▼
+      │
+      ▼
 Dense retrieval (selected by measurement over 5 variants)
-│
-▼
+      │
+      ▼
 Qwen2.5-7B-Instruct (4-bit) — grounded generation, [Source N] citations
-│
-▼
+      │
+      ▼
 3-layer safety: risk classification → grounding rules → confidence gating
-plain
+```
 
 ## Measured Results
 
