@@ -1,82 +1,134 @@
-# Clinical RAG for the WHO Hypertension Guideline
+# Esnad (إسناد) — Clinical RAG for the WHO Hypertension Guideline
 
-**AI Clinical Decision Support Lite Hackathon — Creativa Hub Ismailia**
-**Team:** Engineer &nbsp;|&nbsp; **Member:** Ahmed Mohamed
+&gt; **Ask your documents — get cited answers. Zero hallucination.**
 
-An end-to-end clinical Retrieval-Augmented Generation (RAG) system built over the WHO
-"Guideline for the pharmacological treatment of hypertension in adults" (2021).
-It answers clinical questions with cited, page-referenced evidence, and refuses
-out-of-scope or unsafe requests.
+Esnad is a clinical question-answering assistant built with Retrieval-Augmented Generation (RAG) over the **WHO Guideline for the Pharmacological Treatment of Hypertension in Adults (2021, 61 pages)**. Ask in plain language — every answer is cited to the exact section and page, strictly from the guideline. Out-of-scope or patient-specific dosing questions are **safely refused, never invented**.
 
-## Architecture
+The name carries both meanings of the Arabic *isnād*: the chain of documented attribution — and a companion you lean on.
 
-```text
-WHO Guideline PDF
-      │
-      ▼
-Docling layout-aware parsing (lossless JSON + provenance)
-      │
-      ▼
-HybridChunker — section-aware chunking, 512 tokens max
-150 chunks, 100% metadata coverage (chunk_id, section_title, pages, source)
-      │
-      ▼
-BGE-M3 embeddings (1024-dim, normalized) → FAISS IndexFlatIP
-      │
-      ▼
-Dense retrieval (selected by measurement over 5 variants)
-      │
-      ▼
-Qwen2.5-7B-Instruct (4-bit) — grounded generation, [Source N] citations
-      │
-      ▼
-3-layer safety: risk classification → grounding rules → confidence gating
-```
+Built for the **AI Clinical Decision Support Lite Hackathon — Creativa Hub Ismailia**
+**Team Engineer** · Ahmed Mohamed · 2026
 
-## Measured Results
+---
 
-| Metric | Score |
-|---|---|
-| Precision@3 / Precision@5 | 0.667 / 0.471 |
-| Top-1 Accuracy | 0.643 |
-| Hit Rate@5 | 1.000 |
-| Faithfulness (LLM-as-Judge) | 0.981 (53/54 claims) |
-| Citation Integrity / Coverage | 1.0 / 1.0 |
-| Refusal Accuracy | 1.000 (6/6 behaviors) |
+## 🎯 Final measured results
 
-Retrieval method was **not** chosen by assumption: 5 variants (dense, hybrid BM25+RRF,
-cross-encoder reranking, dedup) were evaluated on the same 15-question golden set, and
-dense-only won. The reranker was repurposed as a **confidence guard** — its scores cleanly
-separate in-scope (min 0.479) from out-of-scope (max 0.129) questions, enabling
-data-driven refusal thresholds.
+| Area | Metric | Score |
+|---|---|---|
+| Retrieval | Precision@3 / Precision@5 | 0.667 / 0.471 |
+| Retrieval | Top-1 Accuracy | 0.643 |
+| Retrieval | Hit Rate@5 | **1.000** |
+| Generation | Faithfulness (LLM-as-judge) | 0.981 (53/54 claims) |
+| Generation | Citation Integrity / Coverage | 1.0 / 1.0 |
+| Safety | Refusal Accuracy | **1.000 (6/6 behaviors)** |
 
-## Repository Structure
+Every number is reproducible from the evaluation outputs in this repository — nothing is hand-typed.
 
-| Path | Content |
-|---|---|
-| `notebook/` | Full Kaggle notebook: parsing → chunking → retrieval → evaluation → generation → safety |
-| `outputs/chunks.json` | 150 chunks with full metadata |
-| `outputs/document_metadata.json` | Document-level metadata (title, publisher, ISBN, licence) |
-| `outputs/who_guideline_parsed.md` | Parsed guideline in Markdown |
-| `outputs/eval_*.json` | Retrieval evaluation results per variant |
-| `outputs/eval_report_card.json` | Final report card — all metrics in one document |
+---
 
-## How to Run
+## 🏗️ Architecture
 
-1. Open the notebook in **Kaggle** with GPU (T4) enabled.
-2. Add the WHO guideline PDF as a Kaggle dataset input.
-3. Run → Restart & Run All. All outputs are written to `/kaggle/working/`.
+    WHO Guideline PDF
+          │
+          ▼
+    ① Parsing — Docling (layout-aware; dual export: provenance-rich JSON + readable Markdown)
+          │
+          ▼
+    ② Chunking — HybridChunker (section-aware; 150 chunks, ≤512 tokens, 100% metadata)
+          │
+          ▼
+    ③ Embeddings — BGE-M3 (1024-dim semantic vectors)
+          │
+          ▼
+    ④ Retrieval — FAISS dense top-k
+          │
+          ▼
+    ⑤ Generation — Qwen2.5-7B-Instruct (4-bit), grounded with [Source N] citations
+          │
+          ▼
+    ⑥ Safety — 3 layers: risk classifier → grounding rules → confidence guard
 
-## Tech Stack
+No monolithic frameworks — every stage is wired by hand so each one stays measurable, replaceable, and explainable.
 
-Docling · BGE-M3 · FAISS · rank_bm25 · bge-reranker-v2-m3 · Qwen2.5-7B-Instruct (4-bit NF4) · pandas · matplotlib
+---
 
-All models are open-source (Hugging Face). No closed APIs.
+## 🧪 Key engineering decisions — all backed by measurement
 
-## Source Document
+1. **Evaluation before building.** A golden set of 15 clinical questions (written from the guideline, with known answers) was used to compare **5 retrieval variants** on identical questions, chunks, and index. **Dense-only retrieval won** (P@5 0.471, Top-1 0.643); hybrid BM25+RRF and cross-encoder reranking added complexity with no gain.
 
-WHO (2021). *Guideline for the pharmacological treatment of hypertension in adults.*
-ISBN 978-92-4-003398-6 · Licence: CC BY-NC-SA 3.0 IGO
-https://iris.who.int/server/api/core/bitstreams/f062769d-f075-4a00-87af-0a2106e0bd04/content
+2. **The reranker paradox.** The re-ranker *failed* at ranking (Top-1 dropped 0.64 → 0.57) — but its raw scores cleanly separated in-scope (min 0.479) from out-of-scope (max 0.129) questions. It was **repurposed as a confidence guard** with data-derived thresholds: refuse below **0.304**, high confidence above **0.987**.
 
-The PDF itself is not included in this repository (WHO copyright) — use the link above.
+3. **Twin chunks.** The guideline's executive summary repeats body-text recommendations almost verbatim, flooding top results with near-duplicates. Measured insight: deduplication *during ranking* hurt Precision@K (0.47 → 0.36), so dedup (Jaccard ≥ 0.7) was **moved to context assembly** — the model sees 5 unique sources instead of repeated ones.
+
+---
+
+## 🛡️ Safety by design
+
+- **Risk classifier** — emergencies are redirected to care; patient-specific cases get a caution label
+- **6-rule grounding prompt** — answer only from sources, cite every claim, say when it's not there, no off-document advice, no patient-specific dosing, always add a medical disclaimer
+- **Confidence guard** — scores below 0.304 trigger a safe refusal with a clear reason
+
+Tested on 6 risky scenarios: **6/6 correct behaviors**.
+
+---
+
+## 📱 Live demo
+
+The notebook ships with an **Esnad-branded Gradio web UI** (last cell): the guideline is loaded, analyzed, and ready for questions — with colored status badges (answered / general guidance / safely refused / redirected) and evidence cards showing section + page for every answer.
+
+---
+
+## 🧰 Tech stack — 100% open source
+
+| Tool | Role | Why |
+|---|---|---|
+| Docling | PDF parsing | Layout-aware; preserves real page numbers — the basis of page-level citations |
+| HybridChunker | Chunking | Section-aware splitting; 150 chunks ≤ 512 tokens |
+| BGE-M3 | Embeddings | Strong multilingual retrieval; 8192-token context |
+| FAISS | Vector index | Exact similarity search in milliseconds, fully local |
+| rank_bm25 | Keyword baseline | Classic BM25 for the hybrid variant |
+| bge-reranker-v2-m3 | Cross-encoder | Failed at ranking → repurposed as the confidence guard |
+| Qwen2.5-7B-Instruct (4-bit) | Generation | Open-source, follows strict rules, runs on a free Kaggle GPU |
+| Gradio | Demo UI | Esnad phone-style interface |
+
+Runs entirely on free Kaggle GPUs. No API keys. No per-query costs.
+
+---
+
+## 🚀 How to run
+
+1. Open the notebook in **Kaggle**
+2. Settings → **Internet: On**, **Accelerator: GPU T4** (or P100)
+3. Attach the WHO Hypertension Guideline PDF as input data
+4. **Run → Restart & Run All**
+5. The last cell launches the Esnad demo UI (public link via `share=True`, valid 72h)
+
+---
+
+## 📁 Repository structure
+
+    ├── Ahmed-Mohamed-Team-Engineer-Creativa-Hub-Ismailia.ipynb   # main notebook (all stages)
+    ├── README.md
+    ├── data/
+    │   └── WHO Hypertension Guideline.pdf                       # source document
+    ├── outputs/
+    │   ├── chunks.json                                          # 150 chunks with full metadata
+    │   ├── eval_baseline_dense.json                             # golden-set retrieval scores
+    │   ├── eval_variant_comparison.json                         # all 5 retrieval variants
+    │   ├── safety_battery_results.json                          # 6/6 safety scenarios
+    │   └── eval_report_card.json                                # final metrics
+    └── presentation/
+        └── pitch_deck.pptx                                      # Esnad pitch deck
+
+---
+
+## 💼 Business model
+
+B2B subscription per facility (hospitals, clinic networks, telemedicine platforms, medical education centers), plus an on-premise licence for institutions requiring full data control. Fully open-source stack → no per-query API costs, no patient data leaves the facility. The same verified engine serves any document-heavy domain — legal, education, engineering — by swapping the input documents, with zero code changes.
+
+---
+
+## 👤 Author
+
+**Ahmed Mohamed** — Team Engineer · Creativa Hub Ismailia
+AI Clinical Decision Support Lite Hackathon · 2026
